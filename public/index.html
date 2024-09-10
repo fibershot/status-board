@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+</head>
+<body id="bodyId">
+    <!-- Text field which index.js interacts with -->
+    <div class="centerFix"><p class="lato-regular" id="textElement">default text</p></div>
+
+    <!-- Import socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Make variable for io()
+        var socket = io();
+
+        // Receive server's request to change text
+        socket.on("updateText", function(newText) {
+            console.log("Received text:", newText);
+            var textElement = document.getElementById("textElement");
+            if (textElement) {
+                textElement.innerText = newText;
+            }
+        });
+
+        // Receive server's request to change font size
+        socket.on("updateTextSize", function(newSize) {
+            console.log("Received text size:", newSize);
+            var textElement = document.getElementById("textElement");
+            if (textElement) {
+                let parse = newSize + "px";
+                textElement.style.fontSize = parse;
+            }
+        });
+
+        // Receive server's request to change background color
+        socket.on("updateBackgroundColor", function(newColor) {
+            console.log("Received hex:", newColor);
+            if (newColor){
+                document.body.style.backgroundColor = newColor;
+            }
+        });
+      </script>
+</body>
+</html>
