@@ -10,3 +10,5 @@ Access server in a web browser using **{address}:1337**.
 As of now, commands are used client-side within ~~the web browser~~ a new terminal window using any console of your liking with **node client.js**.
 
 Not really much to see as of now. Thanks.
+
+//TODO: Cat stuff and one meme
