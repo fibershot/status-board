@@ -37,8 +37,8 @@ io.on("connection", (socket) => {
     // and updates the HTML element accordingly to the request.
 
     // Change text field in the HTML file. If input is undefined to null, ignore.
-    // socket.emit("change.text", ("text"));
-    socket.on("change.text", (newText) => {
+    // socket.emit("text", ("text"));
+    socket.on("text", (newText) => {
         if (newText !== undefined && newText !== null){
             console.log("Updating text to:", newText);
             io.emit("updateText", newText);
@@ -48,8 +48,8 @@ io.on("connection", (socket) => {
     });
 
     // Change text field font size in the HTML file, understands text or int input.
-    // socket.emit("change.text.size", "24")
-    socket.on("change.text.size", (newSize) => {
+    // socket.emit("textSize", "24")
+    socket.on("textSize", (newSize) => {
         if (newSize !== undefined && newSize !== null){
             console.log("Updating font to:", newSize);
             io.emit("updateTextSize", newSize);
@@ -59,8 +59,8 @@ io.on("connection", (socket) => {
     });
 
     // Change background color in the HTML file by using hex values.
-    // socket.emit("change.background.color", ("#FFFFFF"));
-    socket.on("change.background.color", (newHex) => {
+    // socket.emit("backgroundColor", ("#FFFFFF"));
+    socket.on("backgroundColor", (newHex) => {
         if (newHex !== undefined && newHex !== null){
             console.log("Updating hex to:", newHex);
             io.emit("updateBackgroundColor", newHex);
@@ -101,4 +101,5 @@ io.on("connection", (socket) => {
 // Listen to the server port
 server.listen(port_, () => {
     console.log("Listening to", port_);
+    io.on("error", console.error);
 });
