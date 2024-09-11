@@ -2,8 +2,8 @@
 Small node.js/express/socket.io project which allows displaying status messages in real-time from any web browser. In developement for a very specific situtation.
 
 ## Information
-Made with JavaScript and HTML.
-Modules include node, express and socket.io.
+Made with JavaScript and HTML. ESM base (not CommonJS).
+Modules include [node](https://www.npmjs.com/package/node), [express](https://www.npmjs.com/package/express), [socket.io](https://www.npmjs.com/package/socket.io) and [chalk](https://www.npmjs.com/package/chalk).
 
 Use **node index.js** in a terminal to start the server locally. Default port 1337 (so cool I know (changeable)).
 Access server in a web browser using **{address}:1337**.
