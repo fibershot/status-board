@@ -4,6 +4,13 @@ import http from "http";
 import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
+import chalk from "chalk";
+
+const sucClr = chalk.hex("#24D18D")
+const wrnClr = chalk.hex("#FFA500");
+const errClr = chalk.hex("#EE432F");
+const defClr = chalk.hex("#3CB5D9");
+const graClr = chalk.gray;
 
 const app = express();
 const server = http.createServer(app);
@@ -27,9 +34,9 @@ io.on("connection", (socket) => {
     let ip_add = socket.handshake.address;
     let idx = ip_add.lastIndexOf(":");
     if (idx !== -1){
-        console.log("Connection from", ip_add.slice(idx + 1));
+        console.log(defClr("Connection from", sucClr(ip_add.slice(idx + 1))));
     } else {
-        console.log("Connection from", ip_add);
+        console.log(defClr("Connection from", sucClr(ip_add)));
     }
 
     // Explanation of how changes happen:
@@ -47,10 +54,8 @@ io.on("connection", (socket) => {
     // socket.emit("text", ("text"));
     socket.on("text", (newText) => {
         if (newText !== undefined && newText !== null){
-            console.log("Updating text to:", newText);
+            console.log(defClr("Updating text to:", sucClr(newText)));
             io.emit("updateText", newText);
-        } else {
-            console.error("Cannot update text, because text is", newText);
         }
     });
 
@@ -58,10 +63,8 @@ io.on("connection", (socket) => {
     // socket.emit("textSize", "24")
     socket.on("textSize", (newSize) => {
         if (newSize !== undefined && newSize !== null){
-            console.log("Updating font to:", newSize);
+            console.log(defClr("Updating font to:", sucClr(newSize)));
             io.emit("updateTextSize", newSize);
-        } else {
-            console.error("Cannot update size, because size is", newSize);
         }
     });
 
@@ -69,10 +72,9 @@ io.on("connection", (socket) => {
     // socket.emit("backgroundColor", ("#FFFFFF"));
     socket.on("backgroundColor", (newHex) => {
         if (newHex !== undefined && newHex !== null){
-            console.log("Updating hex to:", newHex);
+            let hexcolor = chalk.hex(newHex);
+            console.log(defClr("Updating hex to:"), hexcolor(newHex));
             io.emit("updateBackgroundColor", newHex);
-        } else {
-            console.error("Cannot update hex, because hex is", newHex);
         }
     });
 
@@ -107,6 +109,6 @@ io.on("connection", (socket) => {
 
 // Listen to the server port
 server.listen(port_, () => {
-    console.log("Listening to", port_);
+    console.log(defClr("Listening to", sucClr(port_)));
     io.on("error", console.error);
 });
