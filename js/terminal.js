@@ -7,7 +7,9 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
+// Start a terminal
 function terminalStart(socket) {
+    // Ask which terminal utility would the user like to use
     rl.question("preset [p] | manual [m] | exit [e]): ", (command) => {
         if (command == "preset" || command == "p"){
             sendPreset(socket, rl, terminalStart);
