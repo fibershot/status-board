@@ -1,5 +1,5 @@
-const readline = require("readline");
-const { sendPreset, sendManual } = require("./terminalUtilities.js");
+import * as readline from "node:readline";
+import { sendPreset, sendManual } from "./terminalUtilities.js";
 
 // Use nodejs readline
 const rl = readline.createInterface({
@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 });
 
 // Start a terminal
-function terminalStart(socket) {
+export function terminalStart(socket) {
     // Ask which terminal utility would the user like to use
     rl.question("preset [p] | manual [m] | exit [e]): ", (command) => {
         if (command == "preset" || command == "p"){
@@ -24,5 +24,3 @@ function terminalStart(socket) {
         }
     });
 }
-
-module.exports = { terminalStart };

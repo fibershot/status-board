@@ -1,6 +1,6 @@
 // Modules
-const io = require("socket.io-client");
-const { terminalStart } = require("./js/terminal.js");
+import { io } from "socket.io-client";
+import { terminalStart } from "./js/terminal.js";
 
 const socket = io("http://localhost:1337");
 

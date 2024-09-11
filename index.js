@@ -1,10 +1,16 @@
 // Set up modules
-const express = require("express");
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import path from "path";
+import { fileURLToPath } from "url";
+
 const app = express();
-const http = require("http");
 const server = http.createServer(app);
-const {Server} = require("socket.io");
 const io = new Server(server);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Make filepath public and choose a port for server (default: 1337)
 app.use(express.static("public"));
@@ -18,8 +24,9 @@ app.get("/", (req, res) => {
 // If a connection occurs:
 io.on("connection", (socket) => {
     // Log IP stupid fucking ffff: appears in IP address due to IPv6 or whatever fuck it parse it
-    var ip_add = socket.handshake.address; var idx = ip_add.lastIndexOf(":");
-    if (idx !== -1 && ip_add.lastIndexOf !== -1){
+    let ip_add = socket.handshake.address;
+    let idx = ip_add.lastIndexOf(":");
+    if (idx !== -1){
         console.log("Connection from", ip_add.slice(idx + 1));
     } else {
         console.log("Connection from", ip_add);

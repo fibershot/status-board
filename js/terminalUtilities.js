@@ -1,4 +1,4 @@
-function sendPreset(socket, rl, terminalStart) {
+export function sendPreset(socket, rl, terminalStart) {
     // Ask for input
     rl.question("back [b] | preset: ", (command) => {
         // Check input contents
@@ -17,7 +17,7 @@ function sendPreset(socket, rl, terminalStart) {
     });
 }
 
-function sendManual(socket, rl, terminalStart){
+export function sendManual(socket, rl, terminalStart){
     // Ask for input
     rl.question("back [b] | manual command: ", (command) => {
         // Check input contents
@@ -43,5 +43,3 @@ function sendManual(socket, rl, terminalStart){
         }
     });
 }
-
-module.exports = { sendPreset, sendManual };
