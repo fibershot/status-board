@@ -1,7 +1,6 @@
 import * as readline from "node:readline";
 import { sendPreset, sendManual } from "./terminalUtilities.js";
 import chalk from "chalk";
-import e from "express";
 
 const sucClr = chalk.hex("#24D18D")
 const wrnClr = chalk.hex("#FFA500");

@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename);
 
 // Make filepath public and choose a port for server (default: 1337)
 app.use(express.static("public"));
-const port_ = 1337;
+const port_ = process.argv[2] || 1337;
 
 // Load HTML page
 app.get("/", (req, res) => {
@@ -39,19 +39,20 @@ io.on("connection", (socket) => {
         console.log(defClr("Connection from", sucClr(ip_add)));
     }
 
-    // Explanation of how changes happen:
-    // The server receives an emit() from the client and checks it. After checking the message
-    // the server sends the client an approving message to continue, which the client
-    // processes in index.html via a script. emit() is a way to EMIT (def: to give off or out)
-    // data from client to server and server to client
+    /* Explanation of how changes happen:
+    The server receives an emit() from the client and checks it. After checking the message
+    the server sends the client an approving message to continue, which the client
+    processes in index.html via a script. emit() is a way to EMIT (def: to give off or out)
+    data from client to server and server to client
 
-    // Example:
-    // Client sends a socket.emit("change.text", "Hello!") => Server recieves it and sends this back
-    // to the client: io.emit("update.text", newText) => After which the client recieves the message
-    // and updates the HTML element accordingly to the request.
+    Example:
+    Client sends a socket.emit("change.text", "Hello!") => Server recieves it and sends this back
+    to the client: io.emit("update.text", newText) => After which the client recieves the message
+    and updates the HTML element accordingly to the request.
 
-    // Change text field in the HTML file. If input is undefined to null, ignore.
-    // socket.emit("text", ("text"));
+    Change text field in the HTML file. If input is undefined to null, ignore.
+    socket.emit("text", ("text"));*/
+    
     socket.on("text", (newText) => {
         if (newText !== undefined && newText !== null){
             console.log(defClr("Updating text to:", sucClr(newText)));
