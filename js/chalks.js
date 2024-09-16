@@ -1,8 +1,8 @@
 import chalk from "chalk";
 
-const sucClr = chalk.hex("#24D18D")
-const wrnClr = chalk.hex("#FFA500");
-const errClr = chalk.hex("#EE432F");
-const defClr = chalk.hex("#3CB5D9");
-const graClr = chalk.gray;
-const whiClr = chalk.white;
+export const sucClr = chalk.hex("#24D18D")
+export const wrnClr = chalk.hex("#FFA500");
+export const errClr = chalk.hex("#EE432F");
+export const defClr = chalk.hex("#3CB5D9");
+export const graClr = chalk.gray;
+export const whiClr = chalk.white;

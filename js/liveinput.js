@@ -1,4 +1,5 @@
 import * as readline from "node:readline";
+import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
 
 export function liveInput(socket, terminalStart){
     // Hide annoying cursor and enable raw mode to capture individual keypresses

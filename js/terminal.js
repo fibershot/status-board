@@ -1,13 +1,7 @@
 import * as readline from "node:readline";
 import { sendPreset, sendManual } from "./terminalUtilities.js";
 import { liveInput } from "./liveinput.js";
-import chalk from "chalk";
-
-const sucClr = chalk.hex("#24D18D")
-const wrnClr = chalk.hex("#FFA500");
-const errClr = chalk.hex("#EE432F");
-const defClr = chalk.hex("#3CB5D9");
-const graClr = chalk.gray;
+import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
 
 // Use nodejs readline
 const rl = readline.createInterface({

@@ -4,13 +4,7 @@ import http from "http";
 import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
-import chalk from "chalk";
-
-const sucClr = chalk.hex("#24D18D")
-const wrnClr = chalk.hex("#FFA500");
-const errClr = chalk.hex("#EE432F");
-const defClr = chalk.hex("#3CB5D9");
-const graClr = chalk.gray;
+import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -43,19 +37,8 @@ io.on("connection", (socket) => {
 
     io.emit("updateText", clientText);
 
-    /* Explanation of how changes happen:
-    The server receives an emit() from the client and checks it. After checking the message
-    the server sends the client an approving message to continue, which the client
-    processes in index.html via a script. emit() is a way to EMIT (def: to give off or out)
-    data from client to server and server to client
-
-    Example:
-    Client sends a socket.emit("change.text", "Hello!") => Server recieves it and sends this back
-    to the client: io.emit("update.text", newText) => After which the client recieves the message
-    and updates the HTML element accordingly to the request.
-
-    Change text field in the HTML file. If input is undefined to null, ignore.
-    socket.emit("text", ("text"));*/
+    // Change text field in the HTML file. If input is undefined to null, ignore.
+    // socket.emit("text", ("text"));
     
     socket.on("text", (newText) => {
         if (newText !== undefined && newText !== null){
@@ -111,11 +94,13 @@ io.on("connection", (socket) => {
         }
     });
 
+    // Fetch request
     socket.on("fetchText", (i) => {
         console.log("Asking client for current text");
         io.emit("fetchText", i);
     });
 
+    // Return
     socket.on("returnText", (text) => {
         console.log("Current text is:", text);
         clientText = text;

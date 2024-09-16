@@ -1,12 +1,6 @@
 import chalk from "chalk";
 import { terminalStart } from "./terminal.js";
-
-const sucClr = chalk.hex("#24D18D")
-const wrnClr = chalk.hex("#FFA500");
-const errClr = chalk.hex("#EE432F");
-const defClr = chalk.hex("#3CB5D9");
-const graClr = chalk.gray;
-const whiClr = chalk.white;
+import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
 
 export function sendPreset(socket, rl, terminalStart) {
     // Ask for input

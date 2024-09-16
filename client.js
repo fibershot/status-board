@@ -1,13 +1,7 @@
 // Modules
 import { io } from "socket.io-client";
 import { terminalStart } from "./js/terminal.js";
-import chalk from "chalk";
-
-const sucClr = chalk.hex("#24D18D")
-const wrnClr = chalk.hex("#FFA500");
-const errClr = chalk.hex("#EE432F");
-const defClr = chalk.hex("#3CB5D9");
-const graClr = chalk.gray;
+import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
 
 const port_ = process.argv[2] || 1337;
 const socket = io("http://localhost:" + port_);
