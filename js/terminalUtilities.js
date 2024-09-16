@@ -10,7 +10,7 @@ const whiClr = chalk.white;
 
 export function sendPreset(socket, rl, terminalStart) {
     // Ask for input
-    rl.question(defClr("\nback [b] | preset: "), (command) => {
+    rl.question(defClr("\nback [b] | preset: "), (command) => { //Ask for input
         // Check input contents
         if (command == "b" || command == "back"){
             terminalStart(socket);
@@ -27,7 +27,7 @@ export function sendPreset(socket, rl, terminalStart) {
     });
 }
 
-export function sendManual(socket, rl, terminalStart){
+export function sendManual(socket, rl, terminalStart) {
     // Ask for input
     rl.question(defClr("\nback [b] | manual command: "), (command) => {
         // Check input contents

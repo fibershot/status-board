@@ -13,18 +13,12 @@ const port_ = process.argv[2] || 1337;
 const socket = io("http://localhost:" + port_);
 
 // Check if the server is reponding. If not, help the user understand what might be the issue
-const timer = setTimeout(function () {console.log(errClr("Cannot connect to the server."), wrnClr("Server running? Wrong address / port?")); process.exit(1);}, 5000);
+const serverTimeout = setTimeout(function () {console.log(errClr("Cannot connect to the server."), wrnClr("Server running? Wrong address / port?")); process.exit(1);}, 5000);
 
 // Connect to the server
 socket.on("connect", () => {
     console.log("Connected to the server!");
-    clearTimeout(timer);
+    clearTimeout(serverTimeout);
     // Starting terminal
     terminalStart(socket);
 });
-
-socket.on()
-
-function timeOut(){
-    console.log(errClr("No response from server."), wrnClr("Is server on or wrong port?"));
-}
