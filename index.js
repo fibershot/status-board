@@ -19,6 +19,8 @@ const io = new Server(server);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+clientText = "default text";
+
 // Make filepath public and choose a port for server (default: 1337)
 app.use(express.static("public"));
 const port_ = process.argv[2] || 1337;
@@ -38,6 +40,8 @@ io.on("connection", (socket) => {
     } else {
         console.log(defClr("Connection from", sucClr(ip_add)));
     }
+
+    io.emit("updateText", clientText);
 
     /* Explanation of how changes happen:
     The server receives an emit() from the client and checks it. After checking the message
@@ -105,6 +109,16 @@ io.on("connection", (socket) => {
                 io.emit("updateText", "Syömässä");
                 break;
         }
+    });
+
+    socket.on("fetchText", (i) => {
+        console.log("Asking client for current text");
+        io.emit("fetchText", i);
+    });
+
+    socket.on("returnText", (text) => {
+        console.log("Current text is:", text);
+        clientText = text;
     });
 });
 

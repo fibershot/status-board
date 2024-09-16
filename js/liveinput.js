@@ -1,4 +1,5 @@
 import * as readline from "node:readline";
+
 export function liveInput(socket, terminalStart){
     // Hide annoying cursor and enable raw mode to capture individual keypresses
     readline.emitKeypressEvents(process.stdin);

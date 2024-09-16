@@ -19,6 +19,8 @@ const serverTimeout = setTimeout(function () {console.log(errClr("Cannot connect
 socket.on("connect", () => {
     console.log("Connected to the server!");
     clearTimeout(serverTimeout);
+    // Fetch current text in website
+    socket.emit("fetchText", "x");
     // Starting terminal
     terminalStart(socket);
 });
