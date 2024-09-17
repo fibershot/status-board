@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
+import fs from "fs";
 
 const app = express();
 const server = http.createServer(app);
@@ -13,7 +14,7 @@ const io = new Server(server);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-clientText = "default text";
+var clientText = "default text";
 
 // Make filepath public and choose a port for server (default: 1337)
 app.use(express.static("public"));
@@ -35,7 +36,8 @@ io.on("connection", (socket) => {
         console.log(defClr("Connection from", sucClr(ip_add)));
     }
 
-    io.emit("updateText", clientText);
+    let text = fs.readFileSync("./txt/current_text.txt", "utf8");
+    io.emit("updateText", text);
 
     // Change text field in the HTML file. If input is undefined to null, ignore.
     // socket.emit("text", ("text"));
@@ -96,14 +98,19 @@ io.on("connection", (socket) => {
 
     // Fetch request
     socket.on("fetchText", (i) => {
-        console.log("Asking client for current text");
         io.emit("fetchText", i);
     });
 
     // Return
     socket.on("returnText", (text) => {
-        console.log("Current text is:", text);
         clientText = text;
+        fs.writeFile("./txt/current_text.txt", text, (err) => {
+            if (err) {
+                console.error("Failed appending file", err);
+            } else {
+                console.log("File updated with text", text);
+            }
+        });
     });
 });
 

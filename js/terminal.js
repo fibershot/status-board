@@ -21,7 +21,6 @@ export function terminalStart(socket) {
             console.log(graClr("Shutting down..."));
             process.exit(1);
         } else if (command == "livetext" || command == "l"){
-            console.log(graClr("Confirmed."));
             liveInput(socket, terminalStart);
         } else {
             console.log(wrnClr("Command input", errClr("invalid.")));
