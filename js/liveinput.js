@@ -19,6 +19,7 @@ export function liveInput(socket, terminalStart){
     // Exit with ESC or Ctrl+C
     process.stdin.on('keypress', (str, key) => {
     if (key.sequence === '\u001b' || key.sequence === "\u0003") {
+        console.clear();
         process.exit(1);
     }
 

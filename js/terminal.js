@@ -12,7 +12,7 @@ const rl = readline.createInterface({
 // Start a terminal
 export function terminalStart(socket) {
     // Ask which terminal utility would the user like to use
-    rl.question(defClr("preset [p] | manual [m] | exit [e]): "), (command) => {
+    rl.question(defClr("preset [p] | manual [m] | liveinput [l] | exit [e]): "), (command) => {
         if (command == "preset" || command == "p"){
             sendPreset(socket, rl, terminalStart);
         } else if (command == "manual" || command == "m"){
