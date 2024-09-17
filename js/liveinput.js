@@ -30,7 +30,9 @@ export function liveInput(socket, terminalStart){
         text = text.slice(0, -1);
     } else if (key.name === 'space') {
         text += ' ';
-    } else if (str && str.length === 1 && !key.ctrl && !key.meta) {
+    }  else if (key.sequence === "return") {
+        text += "<br>";
+    }  else if (str && str.length === 1 && !key.ctrl && !key.meta) {
         text += str; 
     }
 

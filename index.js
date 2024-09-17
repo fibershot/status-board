@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
+import chalk from "chalk";
 import fs from "fs";
 
 const app = express();
@@ -93,6 +94,9 @@ io.on("connection", (socket) => {
                 io.emit("updateBackgroundColor", "#203396");
                 io.emit("updateText", "Syömässä");
                 break;
+            case "default":
+                io.emit("updateBackgroundColor", "#D8C6C6");
+                io.emit("text", "default text");
         }
     });
 
@@ -107,8 +111,6 @@ io.on("connection", (socket) => {
         fs.writeFile("./txt/current_text.txt", text, (err) => {
             if (err) {
                 console.error("Failed appending file", err);
-            } else {
-                console.log("File updated with text", text);
             }
         });
     });
