@@ -96,7 +96,8 @@ io.on("connection", (socket) => {
                 break;
             case "default":
                 io.emit("updateBackgroundColor", "#D8C6C6");
-                io.emit("text", "default text");
+                io.emit("updateText", "default text");
+                break;
         }
     });
 

@@ -11,4 +11,5 @@ As of now, commands are used client-side within ~~the web browser~~ a new termin
 
 Not really much to see as of now. Thanks.
 
-//TODO: Cat stuff and one meme
+
+todo: cat - meme - .json saving - linebreak for text - commands - UI - help
