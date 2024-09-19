@@ -1,53 +1,113 @@
 import chalk from "chalk";
+import readlinesync from "readline-sync"
 import { terminalStart } from "./terminal.js";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
+import { liveInput } from "./liveinput.js";
 
-export function sendPreset(socket, rl, terminalStart) {
+const stopListen = () => process.stdin.removeAllListeners('data');
+
+export function sendPreset(socket, terminalStart) {
+    stopListen();
+    process.stdin.setRawMode(true);
+    process.stdin.setEncoding("utf8");
     // Ask for input
-    rl.question(defClr("\nback [b] | preset: "), (command) => { //Ask for input
-        // Check input contents
-        if (command == "b" || command == "back"){
-            terminalStart(socket);
+    console.clear();
+    console.log(
+        "    Presets\n\n"+
+        "[1] Available\n"+
+        "[2] Away\n"+
+        "[3] Meeting\n"+
+        "[4] Lunch\n"+
+        "[5] Closed\n"+
+        "[6] Back"
+    );
+    
+    process.stdin.on('data', (key) => {
+        if (key === '\u0003') { // Ctrl + C to exit
+            console.log(graClr("Shutting down..."));
+            process.exit();
         }
-        else if (command) {
-            socket.emit("preset", command);
-            console.log(defClr("Preset", sucClr(command), "sent!"));
-            sendPreset(socket, rl, terminalStart);
+
+        switch (key) {
+            case '1': // Available
+                socket.emit("preset", "available");
+                sendPreset(socket, terminalStart);
+                break;
+            case '2': // Away
+                socket.emit("preset", "away");
+                sendPreset(socket, terminalStart);
+                break;
+            case '3': // Meeting
+                socket.emit("preset", "meeting");
+                sendPreset(socket, terminalStart);
+                break;
+            case '4': // Eating
+                socket.emit("preset", "eating");
+                sendPreset(socket, terminalStart);
+                break;
+            case '5': // Closed
+                socket.emit("preset", "closed");
+                sendPreset(socket, terminalStart);
+                break;
+            case '6':
+                terminalStart(socket);
+                break;
+            default:
+                console.log(wrnClr("Command input", errClr("invalid.")));
+                sendPreset(socket, terminalStart);
+                break;
         }
-        else {
-            console.log(wrnClr("Command input", errClr("invalid.")));
-            sendPreset(socket, rl, terminalStart);
-        }
+
+        console.clear();
     });
 }
 
-export function sendManual(socket, rl, terminalStart) {
+export function sendManual(socket, terminalStart) {
+
+    stopListen();
+    process.stdin.setRawMode(true);
+    process.stdin.setEncoding("utf8");
+
     // Ask for input
-    rl.question(defClr("\nback [b] | manual command: "), (command) => {
-        // Check input contents
-        if (command == "back" || command == "b"){
-            terminalStart(socket);
-        } else if (command) {
-            let manualQuery = command + "'s value: ";
-            // Since we are doing a manual input, we need a second input as well
-            rl.question(defClr(manualQuery), (command2) => {
-                if (command2) {
-                    socket.emit(command, command2);
-                    if (command == "backgroundColor"){
-                        let hexBg = chalk.bgHex(command2);
-                        console.log(defClr("Background color changed to " + whiClr(hexBg(command2))));
-                    } else {
-                        console.log(defClr("Manual", sucClr(command), "sent!"));
-                    }
-                    sendManual(socket, rl, terminalStart);
-                } else {
-                    console.log(wrnClr("Command input", errClr("invalid.")));
-                    sendManual(socket, rl, terminalStart);
-                }
-            });
-        } else {
-            console.log(wrnClr("Command input", errClr("invalid.")));
-            sendManual(socket, rl, terminalStart);
+    console.clear();
+    console.log(
+        "    Manual\n\n"+
+        "[1] Text\n"+
+        "[2] Text size\n"+
+        "[3] Background color\n"+
+        "[4] Background image\n"+
+        "[5] Back\n"
+    );
+    process.stdin.on('data', (key) => {
+        if (key === '\u0003') { // Ctrl + C to exit
+            console.log(graClr("Shutting down..."));
+            process.exit();
+        }
+
+        switch (key) {
+            case '1': // Text
+                stopListen();
+                liveInput(socket, terminalStart);
+                break;
+            case '2': // Text size
+                socket.emit("preset", "away");
+                sendManual(socket, terminalStart);
+                break;
+            case '3': // Background color
+                socket.emit("preset", "meeting");
+                sendManual(socket, terminalStart);
+                break;
+            case '4': // Background image
+                socket.emit("preset", "eating");
+                sendManual(socket, terminalStart);
+                break;
+            case '5': // Back
+                terminalStart(socket);
+                break;
+            default:
+                console.log(wrnClr("Command input", errClr("invalid.")));
+                sendManual(socket, terminalStart);
+                break;
         }
     });
 }

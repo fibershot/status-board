@@ -1,20 +1,23 @@
 // Set up modules
-import express from "express";
-import http from "http";
-import { Server } from "socket.io";
+import fs from "fs";
 import path from "path";
+import http from "http";
+import chalk from "chalk";
+import express from "express";
+import { Server } from "socket.io";
 import { fileURLToPath } from "url";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
-import chalk from "chalk";
-import fs from "fs";
 
+// Set up variables
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
+// Pathing variables
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Other variables
 var clientText = "default text";
 
 // Make filepath public and choose a port for server (default: 1337)
@@ -28,7 +31,7 @@ app.get("/", (req, res) => {
 
 // If a connection occurs:
 io.on("connection", (socket) => {
-    // Log IP stupid fucking ffff: appears in IP address due to IPv6 or whatever fuck it parse it
+    // Log ip and parse it
     let ip_add = socket.handshake.address;
     let idx = ip_add.lastIndexOf(":");
     if (idx !== -1){
@@ -37,6 +40,7 @@ io.on("connection", (socket) => {
         console.log(defClr("Connection from", sucClr(ip_add)));
     }
 
+    // Setup file reading
     let text = fs.readFileSync("./txt/current_text.txt", "utf8");
     io.emit("updateText", text);
 
