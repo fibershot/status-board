@@ -2,6 +2,7 @@ import * as readline from "node:readline";
 import { terminalStart } from "./terminal.js";
 import { sendPreset, sendManual } from "./terminalUtilities.js";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
+import { menuUI } from "./terminalUI.js";
 import fs from "fs";
 
 export function liveInput(socket, terminalStart){
@@ -20,7 +21,7 @@ export function liveInput(socket, terminalStart){
     // Listen for keypress events
     // Exit with ESC or Ctrl+C
     process.stdin.on('keypress', (str, key) => {
-    if (key.sequence === '\u001b' || key.sequence === "\u0003") {
+    if (key.name === "escape") {
         process.stdin.removeAllListeners('keypress');
         exitSequence = true;
         terminalStart();
@@ -41,13 +42,7 @@ export function liveInput(socket, terminalStart){
         socket.emit("text", text);
     } else {
         console.clear();
-        console.log(
-            "\n\n    Menu\n\n"+
-            "[1] Presets\n"+
-            "[2] Manual\n"+
-            "[3] LiveInput\n"+
-            "[4] Help\n"+
-            "[5] Exit\n\nLiveinput's output: ", text);
+        menuUI();
     }
     });
 }

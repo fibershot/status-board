@@ -3,6 +3,7 @@ import readlinesync from "readline-sync"
 import { terminalStart } from "./terminal.js";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
 import { liveInput } from "./liveinput.js";
+import { presetUI, manualUI } from "./terminalUI.js";
 
 const stopListen = () => process.stdin.removeAllListeners('data');
 
@@ -12,15 +13,7 @@ export function sendPreset(socket, terminalStart) {
     process.stdin.setEncoding("utf8");
     // Ask for input
     console.clear();
-    console.log(
-        "    Presets\n\n"+
-        "[1] Available\n"+
-        "[2] Away\n"+
-        "[3] Meeting\n"+
-        "[4] Lunch\n"+
-        "[5] Closed\n"+
-        "[6] Back"
-    );
+    presetUI();
     
     process.stdin.on('data', (key) => {
         if (key === '\u0003') { // Ctrl + C to exit
@@ -50,6 +43,7 @@ export function sendPreset(socket, terminalStart) {
                 sendPreset(socket, terminalStart);
                 break;
             case '6':
+                stopListen();
                 terminalStart(socket);
                 break;
             default:
@@ -70,14 +64,7 @@ export function sendManual(socket, terminalStart) {
 
     // Ask for input
     console.clear();
-    console.log(
-        "    Manual\n\n"+
-        "[1] Text\n"+
-        "[2] Text size\n"+
-        "[3] Background color\n"+
-        "[4] Background image\n"+
-        "[5] Back\n"
-    );
+    manualUI();
     process.stdin.on('data', (key) => {
         if (key === '\u0003') { // Ctrl + C to exit
             console.log(graClr("Shutting down..."));
@@ -102,6 +89,7 @@ export function sendManual(socket, terminalStart) {
                 sendManual(socket, terminalStart);
                 break;
             case '5': // Back
+                stopListen();
                 terminalStart(socket);
                 break;
             default:
