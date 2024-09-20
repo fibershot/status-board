@@ -44,6 +44,7 @@ export function sendPreset(socket, terminalStart) {
                 break;
             case '6':
                 stopListen();
+                console.clear();
                 terminalStart(socket);
                 break;
             default:
@@ -51,8 +52,6 @@ export function sendPreset(socket, terminalStart) {
                 sendPreset(socket, terminalStart);
                 break;
         }
-
-        console.clear();
     });
 }
 

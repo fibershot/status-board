@@ -24,7 +24,7 @@ export function liveInput(socket, terminalStart){
     if (key.name === "escape") {
         process.stdin.removeAllListeners('keypress');
         exitSequence = true;
-        terminalStart();
+        terminalStart(socket);
     } else if (key.name === 'backspace') {
         text = text.slice(0, -1);
     } else if (key.name === 'space') {
