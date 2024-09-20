@@ -65,7 +65,7 @@ export function sendManual(socket, terminalStart) {
     process.stdin.setEncoding("utf8");
 
     // Ask for input
-    console.clear();
+    // Clear console here <----
     manualUI();
     process.stdin.on('data', (key) => {
         if (key === '\u0003') { // Ctrl + C to exit
@@ -75,20 +75,31 @@ export function sendManual(socket, terminalStart) {
 
         switch (key) {
             case '1': // Text
+                /*
                 stopListen();
                 liveInput(socket, terminalStart);
+                */
+                console.clear();
+                console.log("This function is currently not functional. Please use LiveInput");
                 break;
             case '2': // Text size
                 socket.emit("preset", "away");
                 sendManual(socket, terminalStart);
                 break;
             case '3': // Background color
+                /*
                 socket.emit("preset", "meeting");
                 sendManual(socket, terminalStart);
+                */
+                console.log("This function is currently not functional.");
                 break;
             case '4': // Background image
+                /*
                 socket.emit("preset", "eating");
                 sendManual(socket, terminalStart);
+                */
+                console.clear();
+                console.log("This function is currently not functional.");
                 break;
             case '5': // Back
                 stopListen();

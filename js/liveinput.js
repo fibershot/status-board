@@ -24,8 +24,8 @@ export function liveInput(socket, terminalStart){
         // Listen for keypress events
         // Exit with ESC or Ctrl+C
         process.stdin.on("keypress", (str, key) => {
-            if (key.seq === "escape") {
-                // Close this loop, but no the whole program!!!
+            if (key.name === "escape") {
+                process.exit();
             } else if (key.name === 'backspace') {
                 text = text.slice(0, -1);
             } else if (key.name === 'space') {
@@ -40,11 +40,6 @@ export function liveInput(socket, terminalStart){
             console.log("Liveinput:\n" + text + "<");
             socket.emit("text", text);
         });
-
-        process.on("SIGINT", function () {
-            console.clear();
-            terminalStart(socket);
-        })
     } 
 }
 
