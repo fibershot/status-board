@@ -4,17 +4,17 @@ import { sendPreset, sendManual } from "./terminalUtilities.js";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
 import { menuUI } from "./terminalUI.js";
 
-process.stdin.setRawMode(true);
-process.stdin.setEncoding("utf8");
-
 // Start a terminal
 export function terminalStart(socket) {
 
+    process.stdin.setRawMode(true);
     process.stdin.removeAllListeners('data');
-    
+    process.stdin.removeAllListeners('keypress');
+    process.stdin.setEncoding("utf8");
     menuUI();
     
     process.stdin.on('data', (key) => {
+
         if (key === '\u0003') { // Ctrl + C to exit
             console.log(graClr("Shutting down..."));
             process.exit();

@@ -1,48 +1,67 @@
 import * as readline from "node:readline";
-import { terminalStart } from "./terminal.js";
-import { sendPreset, sendManual } from "./terminalUtilities.js";
-import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
-import { menuUI } from "./terminalUI.js";
 import fs from "fs";
 
-export function liveInput(socket, terminalStart){
-    // Hide annoying cursor and enable raw mode to capture individual keypresses
-    let exitSequence = false;
-    readline.emitKeypressEvents(process.stdin);
-    process.stdin.setRawMode(true);
-    socket.emit("fetchText", "x");
+const stopListen = () => process.stdin.removeAllListeners('keypress');
 
+export function liveInput(socket, terminalStart){
+    // Enable raw mode to capture individual keypresses
+    let exitSequence = false;
+
+    readline.emitKeypressEvents(process.stdin);
+    if (process.stdin.isTTY){
+        process.stdin.setRawMode(true);
+    }
+
+    socket.emit("fetchText", "x");
     let text = fs.readFileSync("./txt/current_text.txt", "utf8");
 
     // Clear console for inputting
     console.clear();
-    console.log(text + "<");
+    console.log("Liveinput:\n" + text + "<");
 
-    // Listen for keypress events
-    // Exit with ESC or Ctrl+C
-    process.stdin.on('keypress', (str, key) => {
-    if (key.name === "escape") {
-        process.stdin.removeAllListeners('keypress');
-        exitSequence = true;
-        terminalStart(socket);
-    } else if (key.name === 'backspace') {
-        text = text.slice(0, -1);
-    } else if (key.name === 'space') {
-        text += ' ';
-    }  /*else if (key.name === "return") {
-        text += "<br>";
-    }*/  else if (str && str.length === 1 && !key.ctrl && !key.meta) {
-        text += str; 
-    }
+    readInput();
+    function readInput() {
+        // Listen for keypress events
+        // Exit with ESC or Ctrl+C
+        process.stdin.on("keypress", (str, key) => {
+            if (key.seq === "escape") {
+                // Close this loop, but no the whole program!!!
+            } else if (key.name === 'backspace') {
+                text = text.slice(0, -1);
+            } else if (key.name === 'space') {
+                text += ' ';
+            }  /*else if (key.name === "return") {
+                text += "<br>";
+            }*/ else if (str && str.length === 1 && !key.ctrl && !key.meta) {
+                text += str; 
+            }
 
-    // Update terminal and website
-    if (!exitSequence){
-        console.clear();
-        console.log(text + "<");
-        socket.emit("text", text);
-    } else {
-        console.clear();
-        menuUI();
-    }
-    });
+            console.clear();
+            console.log("Liveinput:\n" + text + "<");
+            socket.emit("text", text);
+        });
+
+        process.on("SIGINT", function () {
+            console.clear();
+            terminalStart(socket);
+        })
+    } 
 }
+
+/*
+            // Update terminal and website
+            if (!exitSequence){
+                console.clear();
+                console.log("Liveinput:\n" + text + "<");
+                socket.emit("text", text);
+            } else {
+                process.kill(process.pid, "SIGINT");
+                console.clear();
+                terminalStart(socket);
+                
+
+                process.on("disconnect", function() {
+                    console.clear();
+                    terminalStart(socket);
+                });
+                */

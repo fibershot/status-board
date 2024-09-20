@@ -9,8 +9,11 @@ const stopListen = () => process.stdin.removeAllListeners('data');
 
 export function sendPreset(socket, terminalStart) {
     stopListen();
-    process.stdin.setRawMode(true);
     process.stdin.setEncoding("utf8");
+    if (process.stdin.isTTY){
+        process.stdin.setRawMode(true);
+    }
+    
     // Ask for input
     console.clear();
     presetUI();
@@ -89,6 +92,7 @@ export function sendManual(socket, terminalStart) {
                 break;
             case '5': // Back
                 stopListen();
+                console.clear();
                 terminalStart(socket);
                 break;
             default:

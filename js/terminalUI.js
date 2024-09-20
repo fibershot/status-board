@@ -1,7 +1,7 @@
 // Menu terminal
 export function menuUI () {
     console.log(
-        "\n\n   Menu\n  ¯¯¯¯¯¯\n"+
+        "   Menu\n  ¯¯¯¯¯¯\n"+
         "[1] Presets\n"+
         "[2] Manual\n"+
         "[3] LiveInput\n"+
