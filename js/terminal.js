@@ -6,7 +6,6 @@ import { menuUI } from "./terminalUI.js";
 
 // Start a terminal
 export function terminalStart(socket) {
-
     console.clear();
     menuUI();
     let index = readlineSync.keyIn("", {limit: "$<1-5>"});

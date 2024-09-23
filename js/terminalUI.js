@@ -18,7 +18,8 @@ export function presetUI () {
         "[3] Meeting\n"+
         "[4] Lunch\n"+
         "[5] Closed\n"+
-        "[6] Back"
+        "[6] Default\n"+
+        "[7] Back"
     );
 }
 

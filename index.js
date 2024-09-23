@@ -6,20 +6,28 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
 import chalk from "chalk";
-import fs from "fs";
+import fs, { stat } from "fs";
 
 
 // Set up variables
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
-
+const io = new Server(server, {
+    pingInterval: 600000, // Set the desired ping interval in milliseconds
+    pingTimeout: 300000,   // Set the ping timeout in milliseconds
+});
 // Pathing variables
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Other variables
 var clientText = "default text";
+
+// Timestamp
+function getTimestamp() {
+    const now = new Date();
+    return `[${now.toLocaleTimeString('en-US', { hour12: false })}]`;
+}
 
 // Make filepath public and choose a port for server (default: 1337)
 app.use(express.static("public"));
@@ -36,9 +44,9 @@ io.on("connection", (socket) => {
     let ip_add = socket.handshake.address;
     let idx = ip_add.lastIndexOf(":");
     if (idx !== -1){
-        console.log(defClr("Connection from", sucClr(ip_add.slice(idx + 1))));
+        console.log(defClr(getTimestamp() + " Connection from", sucClr(ip_add.slice(idx + 1))));
     } else {
-        console.log(defClr("Connection from", sucClr(ip_add)));
+        console.log(defClr(getTimestamp() + " Connection from", sucClr(ip_add)));
     }
 
     // Setup file reading
@@ -49,8 +57,8 @@ io.on("connection", (socket) => {
     // socket.emit("text", ("text"));
     
     socket.on("text", (newText) => {
-        if (newText !== undefined && newText !== null){
-            console.log(defClr("Updating text to:", sucClr(newText)));
+    if (newText !== undefined && newText !== null){
+            console.log(defClr(getTimestamp() + " Updating text to:", sucClr(newText)));
             io.emit("updateText", newText);
         }
     });
@@ -59,7 +67,7 @@ io.on("connection", (socket) => {
     // socket.emit("textSize", "24")
     socket.on("textSize", (newSize) => {
         if (newSize !== undefined && newSize !== null){
-            console.log(defClr("Updating font to:", sucClr(newSize)));
+            console.log(defClr(getTimestamp() + " Updating font to:", sucClr(newSize)));
             io.emit("updateTextSize", newSize);
         }
     });
@@ -69,7 +77,7 @@ io.on("connection", (socket) => {
     socket.on("backgroundColor", (newHex) => {
         if (newHex !== undefined && newHex !== null){
             let hexcolor = chalk.hex(newHex);
-            console.log(defClr("Updating hex to:"), hexcolor(newHex));
+            console.log(defClr(getTimestamp() + " Updating hex to:"), hexcolor(newHex));
             io.emit("updateBackgroundColor", newHex);
         }
     });
@@ -121,12 +129,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", function() {
-        console.log(defClr("Disconnection from", sucClr(ip_add.slice(idx + 1))));
+        console.log(defClr(getTimestamp() + " Disconnection from", sucClr(ip_add.slice(idx + 1))));
     });
 });
 
 // Listen to the server port
 server.listen(port_, () => {
-    console.log(defClr("Listening to", sucClr(port_)));
+    console.log(defClr(getTimestamp() + " Listening to", sucClr(port_)));
     io.on("error", console.error);
 });

@@ -8,7 +8,7 @@ export function sendPreset(socket, terminalStart) {
 
     console.clear();
     presetUI();
-    let index = readlineSync.keyIn("", {limit: "$<1-6>"});
+    let index = readlineSync.keyIn("", {limit: "$<1-7>"});
 
 
     switch (index) {
@@ -28,6 +28,9 @@ export function sendPreset(socket, terminalStart) {
             socket.emit("preset", "closed");
             break;
         case "6":
+            socket.emit("preset", "default");
+            break;
+        case "7":
             console.clear();
             terminalStart(socket);
             break;
@@ -44,7 +47,7 @@ export function sendManual(socket, terminalStart) {
 
     console.clear();
     manualUI();
-    let index = readlineSync.keyIn("", {limit: "$<1-6>"});
+    let index = readlineSync.keyIn("", {limit: "$<1-5>"});
     let text;
 
     switch (index) {
@@ -71,7 +74,6 @@ export function sendManual(socket, terminalStart) {
             break;
         default:
             console.log(wrnClr("Command input", errClr("invalid.")));
-            sendPreset(socket, terminalStart);
             break;
     }
 
