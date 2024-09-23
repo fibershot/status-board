@@ -1,4 +1,4 @@
-import * as readline from "node:readline";
+import readlineSync from "readline-sync"
 import { liveInput } from "./liveinput.js";
 import { sendPreset, sendManual } from "./terminalUtilities.js";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./chalks.js"
@@ -7,42 +7,32 @@ import { menuUI } from "./terminalUI.js";
 // Start a terminal
 export function terminalStart(socket) {
 
-    process.stdin.setRawMode(true);
-    process.stdin.removeAllListeners('data');
-    process.stdin.removeAllListeners('keypress');
-    process.stdin.setEncoding("utf8");
+    console.clear();
     menuUI();
-    
-    process.stdin.on('data', (key) => {
+    let index = readlineSync.keyIn("", {limit: "$<1-5>"});
 
-        if (key === '\u0003') { // Ctrl + C to exit
+    switch (index) {
+        case "1": // Preset
+            sendPreset(socket, terminalStart);
+            break;
+        case "2": // Manual
+            sendManual(socket, terminalStart);
+            break;
+        case "3": // Liveinput
+            //liveInput(socket, terminalStart);
+            break;
+        case "4": // Help
+            console.clear();
+            console.log(graClr("No."));
+            readlineSync.keyInPause("");
+            terminalStart(socket);
+            break;
+        case "5":
             console.log(graClr("Shutting down..."));
             process.exit();
-        }
-
-        switch (key) {
-            case '1': // Preset
-                process.stdin.removeAllListeners('data');
-                sendPreset(socket, terminalStart);
-                break;
-            case '2': // Manual
-                process.stdin.removeAllListeners('data');
-                sendManual(socket, terminalStart);
-                break;
-            case '3': // Liveinput
-                process.stdin.removeAllListeners('data');
-                liveInput(socket, terminalStart);
-                break;
-            case '4': // Help
-                console.log(graClr("Help stuff!!!"));
-                break;
-            case '5':
-                console.log(graClr("Shutting down..."));
-                process.exit();
-            default:
-                console.log(wrnClr("Command input", errClr("invalid.")));
-                terminalStart(socket);
-                break;
-        }
-    });
+        default:
+            console.log(wrnClr("Command input", errClr("invalid.")));
+            terminalStart(socket);
+            break;
+    }
 }

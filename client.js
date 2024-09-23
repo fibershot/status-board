@@ -1,8 +1,7 @@
-process.title = "status-board - client";
-
 // Modules
 import { io } from "socket.io-client";
 import { terminalStart } from "./js/terminal.js";
+import { loading } from "./js/terminalUtilities.js";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
 
 // Set up port for client
@@ -14,10 +13,12 @@ const serverTimeout = setTimeout(function () {console.log(errClr("Cannot connect
 
 // Connect to the server
 socket.on("connect", () => {
-    console.log("Connected to the server!\n");
+    console.log("Connecting to server...");
+    loading;
     clearTimeout(serverTimeout);
     // Fetch current text in for client website
     socket.emit("fetchText", "x");
     // Starting terminal
-    terminalStart(socket);
+    setTimeout(function(){terminalStart(socket)}, 1500);
 });
+

@@ -1,14 +1,13 @@
-process.title = "status-board - server";
-
 // Set up modules
-import fs from "fs";
-import path from "path";
-import http from "http";
-import chalk from "chalk";
 import express from "express";
+import http from "http";
 import { Server } from "socket.io";
+import path from "path";
 import { fileURLToPath } from "url";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
+import chalk from "chalk";
+import fs from "fs";
+
 
 // Set up variables
 const app = express();
@@ -76,7 +75,6 @@ io.on("connection", (socket) => {
     });
 
     // Presets make changing many settings easy within one command
-    // TODO: Make own script? Preset.js?:D
     // socket.emit("preset", "presetName")
     socket.on("preset", function(preset){
         switch (preset) {
@@ -120,6 +118,10 @@ io.on("connection", (socket) => {
                 console.error("Failed appending file", err);
             }
         });
+    });
+
+    socket.on("disconnect", function() {
+        console.log(defClr("Disconnection from", sucClr(ip_add.slice(idx + 1))));
     });
 });
 

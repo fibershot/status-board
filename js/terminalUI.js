@@ -6,13 +6,13 @@ export function menuUI () {
         "[2] Manual\n"+
         "[3] LiveInput\n"+
         "[4] Help\n"+
-        "[5] Exit\n"
+        "[5] Exit"
     );
 }
 
 export function presetUI () {
     console.log(
-        "    Presets\n\n"+
+        "   Presets\n  ¯¯¯¯¯¯¯¯¯\n"+
         "[1] Available\n"+
         "[2] Away\n"+
         "[3] Meeting\n"+
@@ -24,11 +24,11 @@ export function presetUI () {
 
 export function manualUI () {
     console.log(
-        "    Manual\n\n"+
+        "   Manual\n  ¯¯¯¯¯¯¯¯\n"+
         "[1] Text\n"+
         "[2] Text size\n"+
         "[3] Background color\n"+
         "[4] Background image\n"+
-        "[5] Back\n"
+        "[5] Back"
     );
 }
