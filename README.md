@@ -12,4 +12,4 @@ As of now, commands are used client-side within ~~the web browser~~ a new termin
 Not really much to see as of now. Thanks.
 
 
-todo: cat - meme - .json saving - linebreak for text - commands - UI - help
+todo: cat - meme - .json saving - linebreak for text - help
