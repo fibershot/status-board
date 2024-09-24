@@ -17,10 +17,10 @@ export function liveInput(socket, startTerminal) {
 
     // Define keypress event handler
     const onKeyPress = (str, key) => {
-        if (key && key.name === 'p') {
+        if (key.name === "escape") {
             cleanup();
             startTerminal(socket);
-        } else if (key && key.name === 'backspace') {
+        } else if (key && key.name === "backspace") {
             text = text.slice(0, -1);
         } else if (str && !key.ctrl && !key.meta) {
             text += str;
