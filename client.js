@@ -10,7 +10,6 @@ const socket = io("http://localhost:" + port_);
 
 // Check if the server is reponding. If not, help the user understand what might be the issue
 const serverTimeout = setTimeout(function () {console.log(errClr("Cannot connect to the server."), wrnClr("Server running? Wrong address / port?")); process.exit(1);}, 5000);
-var heartbeatstop = false;
 
 // Connect to the server
 socket.on("connect", () => {
