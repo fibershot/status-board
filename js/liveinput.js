@@ -1,62 +1,51 @@
-import * as readline from "node:readline";
-import fs from "fs";
+import readline from 'readline';
+import fs from 'fs';
 
-const stopListen = () => process.stdin.removeAllListeners('keypress');
-
-export function liveInput(socket, terminalStart){
-    // Enable raw mode to capture individual keypresses
-    let exitSequence = false;
-
-    readline.emitKeypressEvents(process.stdin);
-    if (process.stdin.isTTY){
-        process.stdin.setRawMode(true);
-    }
-
+export function liveInput(socket, startTerminal) {
+    // Fetch initial text
     socket.emit("fetchText", "x");
     let text = fs.readFileSync("./txt/current_text.txt", "utf8");
 
-    // Clear console for inputting
+    // Set up readline for capturing keypresses in raw mode
+    readline.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+
+    // Clean console and show initial text
     console.clear();
     console.log("Liveinput:\n" + text + "<");
 
-    readInput();
-    function readInput() {
-        // Listen for keypress events
-        // Exit with ESC or Ctrl+C
-        process.stdin.on("keypress", (str, key) => {
-            if (key.name === "escape") {
-                process.exit();
-            } else if (key.name === 'backspace') {
-                text = text.slice(0, -1);
-            } else if (key.name === 'space') {
-                text += ' ';
-            }  /*else if (key.name === "return") {
-                text += "<br>";
-            }*/ else if (str && str.length === 1 && !key.ctrl && !key.meta) {
-                text += str; 
-            }
+    // Define keypress event handler
+    const onKeyPress = (str, key) => {
+        if (key && key.name === 'p') {
+            cleanup();
+            startTerminal(socket);
+        } else if (key && key.name === 'backspace') {
+            text = text.slice(0, -1);
+        } else if (str && !key.ctrl && !key.meta) {
+            text += str;
+        }
 
-            console.clear();
-            console.log("Liveinput:\n" + text + "<");
-            socket.emit("text", text);
-        });
-    } 
+        // Clear console and show updated text
+        console.clear();
+        console.log("Liveinput:\n" + text + "<");
+
+        // Emit updated text to the socket and write to file
+        socket.emit("text", text);
+        fs.writeFileSync("./txt/current_text.txt", text, "utf8");
+    };
+
+    // Attach keypress event listener
+    process.stdin.on('keypress', onKeyPress);
+
+    // Cleanup function to reset readline and event listeners
+    // Restore normal stdin mode
+    // Stops reading from stdin
+    // Remove keypress listener
+    function cleanup() {
+        process.stdin.setRawMode(false);
+        process.stdin.pause();
+        process.stdin.removeListener('keypress', onKeyPress);
+        console.clear();
+    }
 }
-
-/*
-            // Update terminal and website
-            if (!exitSequence){
-                console.clear();
-                console.log("Liveinput:\n" + text + "<");
-                socket.emit("text", text);
-            } else {
-                process.kill(process.pid, "SIGINT");
-                console.clear();
-                terminalStart(socket);
-                
-
-                process.on("disconnect", function() {
-                    console.clear();
-                    terminalStart(socket);
-                });
-                */
