@@ -6,8 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
 import chalk from "chalk";
-import fs, { stat } from "fs";
-
+import jsonfile from "jsonfile";
 
 // Set up variables
 const app = express();
@@ -50,9 +49,14 @@ io.on("connection", (socket) => {
     }
 
     // Setup file reading
-    let text = fs.readFileSync("./txt/current_text.txt", "utf8");
-    io.emit("updateText", text);
-
+    let text = "";
+    const file = "./json/webdata.json";
+    jsonfile.readFile(file)
+    .then(data => {
+        text = data.text || "";
+        io.emit("updateText", text);
+    });
+    
     // Change text field in the HTML file. If input is undefined to null, ignore.
     // socket.emit("text", ("text"));
     
@@ -121,10 +125,10 @@ io.on("connection", (socket) => {
     // Return
     socket.on("returnText", (text) => {
         clientText = text;
-        fs.writeFile("./txt/current_text.txt", text, (err) => {
-            if (err) {
-                console.error("Failed appending file", err);
-            }
+        jsonfile.readFile(file)
+            .then(existingData => {
+                existingData.text = text;  // Update only the text field
+                return jsonfile.writeFile(file, existingData, { spaces: 2 });
         });
     });
 

@@ -8,6 +8,7 @@
     "@types/socket.io": "^3.0.1",
     "chalk": "^5.3.0",
     "express": "^5.0.0",
+    "jsonfile": "^6.1.0",
     "node": "^22.8.0",
     "readline-sync": "^1.4.10",
     "socket.io": "^4.7.5",

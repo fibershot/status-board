@@ -1,51 +1,64 @@
 import readline from 'readline';
+import jsonfile from 'jsonfile';
 import fs from 'fs';
 
 export function liveInput(socket, startTerminal) {
     // Fetch initial text
     socket.emit("fetchText", "x");
-    let text = fs.readFileSync("./txt/current_text.txt", "utf8");
 
-    // Set up readline for capturing keypresses in raw mode
-    readline.emitKeypressEvents(process.stdin);
-    process.stdin.setRawMode(true);
-    process.stdin.resume();
+    const file = "./json/webdata.json";
+    let text = "";
 
-    // Clean console and show initial text
-    console.clear();
-    console.log("Liveinput:\n" + text + "<");
+    jsonfile.readFile(file)
+        .then(data => {
+            text = data.text || "";
 
-    // Define keypress event handler
-    const onKeyPress = (str, key) => {
-        if (key.name === "escape") {
-            cleanup();
-            startTerminal(socket);
-        } else if (key && key.name === "backspace") {
-            text = text.slice(0, -1);
-        } else if (str && !key.ctrl && !key.meta) {
-            text += str;
-        }
+            // Set up readline for capturing keypresses in raw mode
+            readline.emitKeypressEvents(process.stdin);
+            process.stdin.setRawMode(true);
+            process.stdin.resume();
 
-        // Clear console and show updated text
-        console.clear();
-        console.log("Liveinput:\n" + text + "<");
+            // Clean console and show initial text
+            console.clear();
+            console.log("Liveinput:\n" + JSON.stringify(text) + "<");
 
-        // Emit updated text to the socket and write to file
-        socket.emit("text", text);
-        fs.writeFileSync("./txt/current_text.txt", text, "utf8");
-    };
+            // Define keypress event handler
+            const onKeyPress = (str, key) => {
+                if (key.name === "escape") {
+                    cleanup();
+                    startTerminal(socket);
+                } else if (key && key.name === "backspace") {
+                    text = text.slice(0, -1);
+                } else if (str && !key.ctrl && !key.meta) {
+                    text += str;
+                }
 
-    // Attach keypress event listener
-    process.stdin.on('keypress', onKeyPress);
+                // Clear console and show updated text
+                console.clear();
+                console.log("Liveinput:\n" + JSON.stringify(text) + "<");
 
-    // Cleanup function to reset readline and event listeners
-    // Restore normal stdin mode
-    // Stops reading from stdin
-    // Remove keypress listener
-    function cleanup() {
-        process.stdin.setRawMode(false);
-        process.stdin.pause();
-        process.stdin.removeListener('keypress', onKeyPress);
-        console.clear();
-    }
+                // Emit updated text to the socket and write to file
+                socket.emit("text", text);
+
+                // Write updated text back to the JSON file
+                jsonfile.readFile(file)
+                    .then(existingData => {
+                        existingData.text = text;  // Update only the text field
+                        return jsonfile.writeFile(file, existingData, { spaces: 2 });
+                    })
+                    .catch(error => console.error("Error writing to file:", error));
+            };
+
+                // Attach keypress event listener
+                process.stdin.on('keypress', onKeyPress);
+
+                // Cleanup function to reset readline and event listeners
+                function cleanup() {
+                    process.stdin.setRawMode(false);
+                    process.stdin.pause();
+                    process.stdin.removeListener('keypress', onKeyPress);
+                    console.clear();
+                }
+    })
+    .catch(error => console.error(error));
 }
