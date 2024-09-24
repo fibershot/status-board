@@ -20,7 +20,7 @@ socket.on("connect", () => {
     // Fetch current text in for client website
     socket.emit("fetchText", "x");
     // Starting terminal
-    setTimeout(function(){terminalStart(socket)}, 2500);
+    setTimeout(function(){terminalStart(socket)}, 1500);
 
     socket.on("disconnect", () => {
         console.clear();
