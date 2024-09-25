@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
 import chalk from "chalk";
 import jsonfile from "jsonfile";
+import fs from "fs";
 
 // Set up variables
 const app = express();
@@ -18,9 +19,6 @@ const io = new Server(server, {
 // Pathing variables
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Other variables
-var clientText = "default text";
 
 // Timestamp
 function getTimestamp() {
@@ -49,20 +47,18 @@ io.on("connection", (socket) => {
     }
 
     // Setup file reading
-    let text = "";
     const file = "./json/webdata.json";
-    jsonfile.readFile(file)
-    .then(data => {
-        text = data.text || "";
-        io.emit("updateText", text);
-    });
-    
-    // Change text field in the HTML file. If input is undefined to null, ignore.
-    // socket.emit("text", ("text"));
     
     socket.on("text", (newText) => {
-    if (newText !== undefined && newText !== null){
-            console.log(defClr(getTimestamp() + " Updating text to:", sucClr(newText)));
+        if (newText == "current"){
+            jsonfile.readFile(file)
+            .then(data => {
+                let text = "";
+                text = data.text || "";
+                io.emit("updateText", text);
+            });
+        } else if (newText !== undefined && newText !== null){
+            //console.log(defClr(getTimestamp() + " Updating text to:", sucClr(newText)));
             io.emit("updateText", newText);
         }
     });
@@ -70,7 +66,14 @@ io.on("connection", (socket) => {
     // Change text field font size in the HTML file, understands text or int input.
     // socket.emit("textSize", "24")
     socket.on("textSize", (newSize) => {
-        if (newSize !== undefined && newSize !== null){
+        if (newSize == "current"){
+            jsonfile.readFile(file)
+            .then(data => {
+                let size = "";
+                size = data.textSize || "";
+                io.emit("updateTextSize", size);
+            });
+        } else if (newSize !== undefined && newSize !== null){
             console.log(defClr(getTimestamp() + " Updating font to:", sucClr(newSize)));
             io.emit("updateTextSize", newSize);
         }
@@ -79,7 +82,14 @@ io.on("connection", (socket) => {
     // Change background color in the HTML file by using hex values.
     // socket.emit("backgroundColor", ("#FFFFFF"));
     socket.on("backgroundColor", (newHex) => {
-        if (newHex !== undefined && newHex !== null){
+        if (newHex == "current"){
+            jsonfile.readFile(file)
+            .then(data => {
+                let color = "";
+                color = data.backgroundColor || "";
+                io.emit("updateBackgroundColor", color);
+            });
+        } else if (newHex !== undefined && newHex !== null){
             let hexcolor = chalk.hex(newHex);
             console.log(defClr(getTimestamp() + " Updating hex to:"), hexcolor(newHex));
             io.emit("updateBackgroundColor", newHex);
@@ -91,45 +101,64 @@ io.on("connection", (socket) => {
     socket.on("preset", function(preset){
         switch (preset) {
             case "available":
-                io.emit("updateBackgroundColor", "#6FC276");
+                //io.emit("updateBackgroundColor", "#6FC276");
+                io.emit("updateBackgroundColor", "#B0D47B");
                 io.emit("updateText", "Saatavilla");
                 break;
             case "meeting":
-                io.emit("updateBackgroundColor", "#FFA500");
+                //io.emit("updateBackgroundColor", "#FFA500");
+                io.emit("updateBackgroundColor", "#607D8B");
                 io.emit("updateText", "Kokouksessa");
                 break;
             case "away":
-                io.emit("updateBackgroundColor", "#ADA69C");
+                //io.emit("updateBackgroundColor", "#ADA69C");
+                io.emit("updateBackgroundColor", "#C0C0C0");
                 io.emit("updateText", "Poissa");
                 break;
             case "closed":
-                io.emit("updateBackgroundColor", "#8B0000");
+                //io.emit("updateBackgroundColor", "#8B0000");
+                io.emit("updateBackgroundColor", "#808080");
                 io.emit("updateText", "Suljettu");
                 break;
             case "eating":
-                io.emit("updateBackgroundColor", "#203396");
-                io.emit("updateText", "Syömässä");
+                //io.emit("updateBackgroundColor", "#203396");
+                io.emit("updateBackgroundColor", "#F5C67F");
+                io.emit("updateText", "Lounaalla");
                 break;
             case "default":
-                io.emit("updateBackgroundColor", "#D8C6C6");
+                //io.emit("updateBackgroundColor", "#D8C6C6");
+                io.emit("updateBackgroundColor", "#E0E0E0");
                 io.emit("updateText", "default text");
                 break;
         }
     });
 
-    // Fetch request
-    socket.on("fetchText", (i) => {
-        io.emit("fetchText", i);
-    });
+    socket.on("fetch", (request_) => {
+        io.emit("fetch", request_);
+    })
 
-    // Return
-    socket.on("returnText", (text) => {
-        clientText = text;
+    socket.on("returnFetch", (data) => {
         jsonfile.readFile(file)
-            .then(existingData => {
-                existingData.text = text;  // Update only the text field
-                return jsonfile.writeFile(file, existingData, { spaces: 2 });
-        });
+        .then(existingData => {
+            let parse = data.split("~prs~");
+            let content = parse[0];
+            let contentType = parse[1];
+
+            if (contentType == "fetchText"){
+                existingData.text = content;
+                console.log("[JSON] fetchText content:", existingData.text);
+            } else if (contentType == "textSize"){
+                existingData.textSize = content;
+                console.log("[JSON] textSize content:", existingData.textSize);
+            } else if (contentType == "backgroundColor"){
+                existingData.backgroundColor = content;
+                console.log("[JSON] backgroundColor content:", existingData.backgroundColor);
+            }
+            const jsonString = JSON.stringify(existingData, null, 2);
+            fs.writeFileSync(file, jsonString);
+        }).catch(err => {
+            console.error("[JSON] Error:", err);
+        });;
     });
 
     socket.on("disconnect", function() {

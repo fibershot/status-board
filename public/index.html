@@ -23,32 +23,60 @@
         // Make variable for io()
         var socket = io();
 
+        // Allow server to fetch element data
+        socket.on("fetch", function(request_) {
+            let data = "";
+            let finalData = "";
+            console.log("[Fetch] Received request for:", request_);
+            if (request_ == "fetchText"){
+                data = document.getElementById("textElement").textContent;
+            } else if (request_ == "textSize") {
+                data = document.getElementById("textElement").style.fontSize;
+            } else if (request_ == "backgroundColor"){
+                data = document.getElementById("bodyId").style.backgroundColor;
+            }
+            finalData = data + "~prs~" + request_;
+            console.log("[Fetch] Sending this as data:", finalData);
+            socket.emit("returnFetch", finalData);
+        });
+
+        // Intial data gathering
+        socket.emit("text", "current");
+        socket.emit("backgroundColor", "current");
+        socket.emit("textSize", "current");
+
         // Receive server's request to change text
         socket.on("updateText", function(newText) {
-            console.log("Received text:", newText);
+            console.log("[Update] Updating text:", newText);
             let textElement = document.getElementById("textElement");
             if (textElement) {
                 textElement.innerText = newText;
             }
-            socket.emit("fetchText", "x");
+            socket.emit("fetch", "fetchText");
         });
 
         // Receive server's request to change font size
         socket.on("updateTextSize", function(newSize) {
-            console.log("Received text size:", newSize);
+            console.log("[Update] Updating text size:", newSize);
             let textElement = document.getElementById("textElement");
             if (textElement) {
-                let parse = newSize + "px";
-                textElement.style.fontSize = parse;
+                if (toString(newSize).includes("px")){
+                    textElement.style.fontSize = toString(newSize);
+                } else {
+                    let parse = newSize + "px";
+                    textElement.style.fontSize = parse;
+                }
             }
+            socket.emit("fetch", "textSize");
         });
 
         // Receive server's request to change background color
         socket.on("updateBackgroundColor", function(newColor) {
-            console.log("Received hex:", newColor);
+            console.log("[Update] Updating color:", newColor);
             if (newColor){
                 document.body.style.backgroundColor = newColor;
             }
+            socket.emit("fetch", "backgroundColor");
         });
         
         socket.on("fetchText", (i) => {

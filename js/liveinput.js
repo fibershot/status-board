@@ -44,7 +44,9 @@ export function liveInput(socket, startTerminal) {
                 jsonfile.readFile(file)
                     .then(existingData => {
                         existingData.text = text;  // Update only the text field
-                        return jsonfile.writeFile(file, existingData, { spaces: 2 });
+                        const jsonString = JSON.stringify(existingData, null, 2);
+                        fs.writeFileSync(file, jsonString);
+                        //return jsonfile.writeFile(file, existingData, { spaces: 2 });
                     })
                     .catch(error => console.error("Error writing to file:", error));
             };

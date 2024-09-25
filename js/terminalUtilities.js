@@ -16,7 +16,6 @@ export function sendPreset(socket, terminalStart) {
         case "1": // Available
             socket.emit("preset", "available");
             presetReset;
-
             break;
         case "2": // Away
             socket.emit("preset", "away");
@@ -76,9 +75,8 @@ export function sendManual(socket, terminalStart) {
             socket.emit("backgroundColor", text);
             manualReset;
             break;
-        case "4": // Image replacement
+        case "4": // Image replacement (NOT AVAILABLE)
             text = readlineSync.question("Replace image: ");
-            console.log("Nice try, Kaspian. This feature is not yet available.");
             manualReset;
             break;
         case "5": // Back
