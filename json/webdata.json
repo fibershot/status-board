@@ -1,5 +1,5 @@
 {
-  "text": "default text",
-  "textSize": "",
+  "text": "Hello world!",
+  "textSize": "24px",
   "backgroundColor": "rgb(50, 100, 192)"
 }

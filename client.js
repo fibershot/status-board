@@ -14,12 +14,10 @@ const serverTimeout = setTimeout(function () {console.log(errClr("Cannot connect
 // Connect to the server
 socket.on("connect", () => {
     console.log("Connecting to server...");
-    loading;
-    clearTimeout(serverTimeout);
-    // Fetch current text in for client website
-    socket.emit("fetchText", "x");
-    // Starting terminal
-    setTimeout(function(){terminalStart(socket)}, 1500);
+    loading; // When anything is loading add a loading animation
+    clearTimeout(serverTimeout); // Stop setTimeout timer
+    socket.emit("fetchText", "x"); // Fetch current text in for client website
+    setTimeout(function(){terminalStart(socket)}, 1500); // Starting terminal
 
     socket.on("disconnect", () => {
         console.clear();

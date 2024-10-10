@@ -31,7 +31,7 @@
             if (request_ == "fetchText"){
                 data = document.getElementById("textElement").textContent;
             } else if (request_ == "textSize") {
-                data = document.getElementById("textElement").style.fontSize;
+                data = window.getComputedStyle(document.getElementById("textElement")).fontSize;
             } else if (request_ == "backgroundColor"){
                 data = document.getElementById("bodyId").style.backgroundColor;
             }
@@ -55,20 +55,41 @@
             socket.emit("fetch", "fetchText");
         });
 
-        // Receive server's request to change font size
         socket.on("updateTextSize", function(newSize) {
-            console.log("[Update] Updating text size:", newSize);
-            let textElement = document.getElementById("textElement");
-            if (textElement) {
-                if (toString(newSize).includes("px")){
-                    textElement.style.fontSize = toString(newSize);
-                } else {
-                    let parse = newSize + "px";
-                    textElement.style.fontSize = parse;
+            console.log("[Update] Updating text size for .lato-regular:", newSize);
+
+            // Convert newSize to pixel value if needed
+            if (!newSize.includes("px")) {
+                newSize += "px";
+            }
+
+            // Loop through all stylesheets to find .lato-regular
+            for (let i = 0; i < document.styleSheets.length; i++) {
+                let styleSheet = document.styleSheets[0];
+
+                // Try to access the rules within the stylesheet
+                try {
+                    let rules = styleSheet.cssRules || styleSheet.rules;
+
+                    // Loop through each rule in the stylesheet
+                    for (let j = 0; j < rules.length; j++) {
+                        let rule = rules[j];
+
+                        // Check if this is the rule for the `.lato-regular` class
+                        if (rule.selectorText === ".lato-regular") {
+                            rule.style.fontSize = newSize; // Update the font size for .lato-regular
+                            console.log("[Update] .lato-regular font-size set to", newSize);
+                        }
+                    }
+                } catch (e) {
+                    console.warn("[Error] Unable to access stylesheet:", styleSheet.href, e);
                 }
             }
+
+            // Emit the updated text size to confirm the change
             socket.emit("fetch", "textSize");
         });
+
 
         // Receive server's request to change background color
         socket.on("updateBackgroundColor", function(newColor) {
