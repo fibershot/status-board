@@ -1,5 +1,6 @@
-import chalk from "chalk";
+// For easy access to console coloring with chalk
 
+import chalk from "chalk";
 export const sucClr = chalk.hex("#24D18D")
 export const wrnClr = chalk.hex("#FFA500");
 export const errClr = chalk.hex("#EE432F");

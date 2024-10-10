@@ -1,75 +1,87 @@
-// Set up modules
+// Main script which starts the server
+// node index.js {optional: port}
+
+// Set up modules for server
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 import path from "path";
 import { fileURLToPath } from "url";
-import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
+
+// Other modules
 import chalk from "chalk";
+import { sucClr, wrnClr, errClr, defClr, graClr, whiClr } from "./js/chalks.js";
 import jsonfile from "jsonfile";
 import fs from "fs";
 
-// Set up variables
+// Value variables
+const PING_INTERVAL = 600000;                       // Server ping interval
+const PING_TIMEOUT = 300000;                        // Server timeout interval
+const DEFAULT_PORT = 1337;                          // Default port
+const JSON_PATH = "./json/webdata.json";            // Path for the JSON file
+const __filename = fileURLToPath(import.meta.url);  // File name variable
+const __dirname = path.dirname(__filename);         // File path variable
+
+// Set up server variables
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    pingInterval: 600000, // Set the desired ping interval in milliseconds
-    pingTimeout: 300000,   // Set the ping timeout in milliseconds
+    PING_INTERVAL: 600000,
+    PING_TIMEOUT: 300000,
 });
-// Pathing variables
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-// Timestamp for console
-function getTimestamp() {
-    const now = new Date();
-    return `[${now.toLocaleTimeString('en-US', { hour12: false })}]`;
-}
 
-// Make filepath public and choose a port for server (default: 1337)
-app.use(express.static("public"));
-const port_ = process.argv[2] || 1337;
+app.use(express.static("public"));                  // Set path to public
+const port_ = process.argv[2] || DEFAULT_PORT;      // Set default port or a user determined one
 
-// Load HTML page /public/index.html
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/public/index.html");
+    res.sendFile(__dirname + "/public/index.html"); // Load HTML page /public/index.html
 });
 
-// If a connection occurs:
 io.on("connection", (socket) => {
-    // Log ip and parse it
-    let ip_add = socket.handshake.address;
-    let idx = ip_add.lastIndexOf(":");
-    if (idx !== -1){
-        console.log(defClr(getTimestamp() + " Connection from", sucClr(ip_add.slice(idx + 1))));
-    } else {
-        console.log(defClr(getTimestamp() + " Connection from", sucClr(ip_add)));
-    }
+    ipParser(socket);                               // Parse IP and log it
+    handleTextUpdate(socket, JSON_PATH);            // Text update
+    handleTextSizeUpdate(socket, JSON_PATH);        // Text size update
+    handleBackgroundUpdate(socket, JSON_PATH);      // Background color update
+    handlePreset(socket);                           // Preset handler
+    handleFetchers(socket, JSON_PATH);              // Fetch and return handler
 
-    // Setup file reading
-    const file = "./json/webdata.json";
-    
-    /* About the following socket.on(s) (only index.html uses this request)
-    If received text from values is "current", read the .json file and return value
-    TODO: If file is empty, resort to something else */
-    
-    // Change text field in HTML file
-    // e.g: socket.emit("text", "Hello world!")
+    socket.on("disconnect", function() {
+        console.log(defClr(getTimestamp() + " Disconnection from", sucClr(socket.handshake.address)));
+    });
+});
+
+// Listen to the server port
+server.listen(port_, () => {
+    console.log(defClr(getTimestamp() + " Listening to", sucClr(port_)));
+    io.on("error", console.error);
+});
+
+
+
+// Functions
+
+/* About the following handlers (only index.html uses this request)
+If received text from values is "current", read the .json file and return value
+TODO: If file is empty, resort to something else */
+// Change text field in HTML file
+// e.g: socket.emit("text", "Hello world!")
+function handleTextUpdate(socket, file) {
     socket.on("text", (newText) => {
-        if (newText == "current"){
-            jsonfile.readFile(file)
-            .then(data => {
-                let text = "";
-                text = data.text || "";
+        if (newText === "current") {
+            jsonfile.readFile(file).then(data => {
+                let text = data.text || "";
                 io.emit("updateText", text);
             });
-        } else if (newText !== undefined && newText !== null){
+        } else if (newText !== undefined && newText !== null) {
             io.emit("updateText", newText);
         }
     });
+}
 
-    // Change text field font size in the HTML file, understands text or int input.
-    // e.g: socket.emit("textSize", "24")
+// Change text field font size in the HTML file, understands text or int input.
+// e.g: socket.emit("textSize", "24")
+function handleTextSizeUpdate(socket, file) {
     socket.on("textSize", (newSize) => {
         if (newSize == "current"){
             jsonfile.readFile(file)
@@ -83,9 +95,11 @@ io.on("connection", (socket) => {
             io.emit("updateTextSize", newSize);
         }
     });
+}
 
-    // Change background color in the HTML file by using hex values.
-    // e.g: socket.emit("backgroundColor", ("#FFFFFF"))
+// Change background color in the HTML file by using hex values.
+// e.g: socket.emit("backgroundColor", ("#FFFFFF"))
+function handleBackgroundUpdate(socket, file) {
     socket.on("backgroundColor", (newHex) => {
         if (newHex == "current"){
             jsonfile.readFile(file)
@@ -100,9 +114,12 @@ io.on("connection", (socket) => {
             io.emit("updateBackgroundColor", newHex);
         }
     });
+}
 
-    // Change anything at once with a command of your choice
-    // socket.emit("preset", "presetName")
+
+// Change anything at once with a command of your choice
+// socket.emit("preset", "presetName")
+function handlePreset(socket){
     socket.on("preset", function(preset){
         switch (preset) {
             case "available":
@@ -131,14 +148,17 @@ io.on("connection", (socket) => {
                 break;
         }
     });
+}
 
-    /*  Usage:
-        socket.emit("fetch", request_)
-        text
-        textSize
-        backgroundColor
-    */
 
+// Fetch and return function
+/*  Usage:
+    socket.emit("fetch", request_)
+    text
+    textSize
+    backgroundColor
+*/
+function handleFetchers(socket, file){
     socket.on("fetch", (request_) => {
         io.emit("fetch", request_);
     })
@@ -169,14 +189,20 @@ io.on("connection", (socket) => {
             console.error("[JSON] Error:", err);
         });;
     });
+}
 
-    socket.on("disconnect", function() {
-        console.log(defClr(getTimestamp() + " Disconnection from", sucClr(ip_add.slice(idx + 1))));
-    });
-});
+// Timestamp function for console
+function getTimestamp() {
+    const now = new Date();
+    return `[${now.toLocaleTimeString("en-US", { hour12: false })}]`;
+}
 
-// Listen to the server port
-server.listen(port_, () => {
-    console.log(defClr(getTimestamp() + " Listening to", sucClr(port_)));
-    io.on("error", console.error);
-});
+function ipParser(socket) {
+    let ip_add = socket.handshake.address;
+    let idx = ip_add.lastIndexOf(":");
+    if (idx !== -1){
+        console.log(defClr(getTimestamp() + " Connection from", sucClr(ip_add.slice(idx + 1))));
+    } else {
+        console.log(defClr(getTimestamp() + " Connection from", sucClr(ip_add)));
+    }
+}
