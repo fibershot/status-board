@@ -9,7 +9,4 @@ Use **node index.js** in a terminal to start the server locally and with **(e.g)
 Access server in a web browser using **{address}:1337**.
 As of now, commands are used client-side within ~~the web browser~~ a new terminal window using any console of your liking with **node client.js** (if you use a custom port, remember to address it!).
 
-Not really much to see as of now. Thanks.
-
-
-todo: cat - meme - linebreak for text - help
+This project is finished as is, might be rewritten later.
